@@ -7,9 +7,10 @@ interface ConfigState {
   updateConfig: (updates: Partial<BusinessConfig>) => void;
   resetConfig: () => void;
   updateNestedConfig: <K extends keyof BusinessConfig>(
-    key: K, 
+    key: K,
     updates: Partial<BusinessConfig[K]>
   ) => void;
+  hydrateFromConfigFile: () => Promise<void>;
 }
 
 const initialConfig: BusinessConfig = {
@@ -86,11 +87,31 @@ const initialConfig: BusinessConfig = {
   blockedDays: [0, 6] // Sunday, Saturday
 };
 
+const hydrateFromJson = async (update: any) => {
+  try {
+    const response = await fetch('/config.json');
+    if (response.ok) {
+      const jsonConfig = await response.json();
+      update({ config: { ...initialConfig, ...jsonConfig } });
+      return;
+    }
+  } catch (e) {}
+
+  try {
+    const response = await fetch('/website-config.json');
+    if (response.ok) {
+      const jsonConfig = await response.json();
+      update({ config: { ...initialConfig, ...jsonConfig } });
+      return;
+    }
+  } catch (e) {}
+};
+
 export const useConfigStore = create<ConfigState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       config: initialConfig,
-      
+
       updateConfig: (updates) => set((state) => ({
         config: { ...state.config, ...updates }
       })),
@@ -104,8 +125,10 @@ export const useConfigStore = create<ConfigState>()(
           }
         }
       })),
-      
-      resetConfig: () => set({ config: initialConfig })
+
+      resetConfig: () => set({ config: initialConfig }),
+
+      hydrateFromConfigFile: () => hydrateFromJson(set)
     }),
     {
       name: 'business-config-storage',

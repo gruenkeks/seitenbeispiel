@@ -14,9 +14,9 @@ import Footer from './Footer';
 import { BusinessConfig } from '@/types';
 
 export default function StandaloneWebsite({ enableConfigFetch = true }: { enableConfigFetch?: boolean }) {
-  const { config, updateConfig } = useConfigStore();
+  const { config, updateConfig, hydrateFromConfigFile } = useConfigStore();
   const [isLoaded, setIsLoaded] = useState(!enableConfigFetch);
-  
+
   // Modal State
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -24,26 +24,14 @@ export default function StandaloneWebsite({ enableConfigFetch = true }: { enable
   useEffect(() => {
     if (!enableConfigFetch) return;
 
-    // Try to load config from public/website-config.json
-    fetch('/website-config.json')
-      .then(res => {
-        if (res.ok) return res.json();
-        throw new Error('Config not found');
-      })
-      .then((data: BusinessConfig) => {
-        // Hydrate the store with the external config
-        // This overrides whatever is in localStorage/default
-        Object.keys(data).forEach(key => {
-             // @ts-ignore
-             updateConfig({ [key]: data[key] });
-        });
-        setIsLoaded(true);
-      })
-      .catch(err => {
-        console.warn("Standalone mode: Could not load website-config.json, using default/storage.", err);
-        setIsLoaded(true);
-      });
-  }, [updateConfig, enableConfigFetch]);
+    // Try to load config from public/config.json or website-config.json
+    hydrateFromConfigFile().then(() => {
+      setIsLoaded(true);
+    }).catch((err: any) => {
+      console.warn("Standalone mode: Could not load config file.", err);
+      setIsLoaded(true);
+    });
+  }, [hydrateFromConfigFile, enableConfigFetch]);
 
   if (!isLoaded) return <div className="min-h-screen bg-white flex items-center justify-center">Laden...</div>;
 
@@ -84,4 +72,3 @@ export default function StandaloneWebsite({ enableConfigFetch = true }: { enable
     </div>
   );
 }
-

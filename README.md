@@ -10,7 +10,8 @@ Dies ist der Export deiner Website.
    ```
 
 2. Füge deine Konfiguration hinzu:
-   - Kopiere deine `website-config.json` in den Ordner `public/`.
+   - Stelle sicher, dass deine Bilder korrekt konfiguriert sind.
+   - Kopiere deine Konfigurationsdatei (`website-config.json`) nach `public/config.json` (oder benenne um).
 
 3. Starten (Development):
    ```bash
@@ -20,3 +21,6 @@ Dies ist der Export deiner Website.
 4. Live-Schalten (Production):
    Wenn du auf Vercel/Netlify hostest, setze die Environment Variable:
    `NEXT_PUBLIC_BUILD_MODE=standalone`
+
+## Notiz zu Bildern
+Die Bilder werden beim Export bereinigt. Stelle sicher, dass alle benötigten Bilder in `public/images/` vorhanden sind (hero.png, about.png, service-*.png).
