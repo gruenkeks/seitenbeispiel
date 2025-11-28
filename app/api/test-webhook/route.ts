@@ -6,7 +6,7 @@ export async function GET() {
   
   const result = await submitLead({
     meta: {
-      source: 'test-api',
+      source: 'website-builder',
       ownerPhone: 'test-phone',
       ownerEmail: 'test-email',
       smsSenderName: 'TestSender',
@@ -30,5 +30,3 @@ export async function GET() {
     }
   });
 }
-
-
