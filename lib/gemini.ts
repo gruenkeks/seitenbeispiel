@@ -6,8 +6,31 @@ import path from 'path';
 interface GenerateImageParams {
   prompt: string;
   aspectRatio?: "16:9" | "1:1" | "4:3" | "3:4" | "9:16";
-  sectionKey?: string; // If provided, save to permanent path /images/{sectionKey}.png and clean generated/
+  sectionKey?: string; // If provided, save to permanent path /images/{sectionKey}/image.png
 }
+
+const sanitizeSectionKey = (rawKey: string) => {
+  return rawKey
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9-_]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'section';
+};
+
+const getSectionImagePaths = (sectionKey: string) => {
+  const safeKey = sanitizeSectionKey(sectionKey);
+  const sectionDir = path.join(process.cwd(), 'public', 'images', 'sections', safeKey);
+  const filePath = path.join(sectionDir, 'image.png');
+  const publicUrl = `/images/sections/${safeKey}/image.png`;
+  return { sectionDir, filePath, publicUrl };
+};
+
+const ensureCleanDirectory = (dirPath: string) => {
+  if (fs.existsSync(dirPath)) {
+    fs.rmSync(dirPath, { recursive: true, force: true });
+  }
+  fs.mkdirSync(dirPath, { recursive: true });
+};
 
 export async function generateImage({ prompt, aspectRatio = "16:9", sectionKey }: GenerateImageParams) {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -68,37 +91,17 @@ export async function generateImage({ prompt, aspectRatio = "16:9", sectionKey }
     let imageUrl: string;
 
     if (sectionKey) {
-      // Permanent path: delete old if exists, save to /images/{sectionKey}.png
-      const permanentPath = path.join(process.cwd(), 'public', 'images', `${sectionKey}.png`);
-      if (fs.existsSync(permanentPath)) {
-        fs.unlinkSync(permanentPath); // Delete old
-      }
-
-      // Ensure images dir exists
-      const imagesDir = path.dirname(permanentPath);
-      if (!fs.existsSync(imagesDir)) {
-        fs.mkdirSync(imagesDir, { recursive: true });
-      }
-
-      fs.writeFileSync(permanentPath, buffer);
-      imageUrl = `/images/${sectionKey}.png`;
-
-      // Clean generated folder
-      const generatedDir = path.join(process.cwd(), 'public', 'images', 'generated');
-      if (fs.existsSync(generatedDir)) {
-        fs.rmSync(generatedDir, { recursive: true, force: true });
-      }
+      const { sectionDir, filePath, publicUrl } = getSectionImagePaths(sectionKey);
+      ensureCleanDirectory(sectionDir);
+      fs.writeFileSync(filePath, buffer);
+      imageUrl = publicUrl;
     } else {
-      // Fallback: generated folder with timestamp (for non-builder uses)
+      // Fallback: generated folder only keeps latest image
       const saveDir = path.join(process.cwd(), 'public', 'images', 'generated');
-      if (!fs.existsSync(saveDir)) {
-        fs.mkdirSync(saveDir, { recursive: true });
-      }
-
-      const filename = `gen-${Date.now()}.png`;
-      const filepath = path.join(saveDir, filename);
+      ensureCleanDirectory(saveDir);
+      const filepath = path.join(saveDir, 'image.png');
       fs.writeFileSync(filepath, buffer);
-      imageUrl = `/images/generated/${filename}`;
+      imageUrl = `/images/generated/image.png`;
     }
 
     return {

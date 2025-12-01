@@ -48,20 +48,20 @@ const initialConfig: BusinessConfig = {
   },
 
   // Design defaults
-  heroImage: "/images/hero-default.png",
+  heroImage: "/images/sections/hero/image.png",
   heroImagePrompt: "High quality hero image for General company, Rauch Sanitär-Heizungsbau. Professional, clean, modern architecture or plumbing.",
   aboutSection: {
     show: true,
     title: "Über uns",
     text: "Wir sind ein traditionsreicher Handwerksbetrieb, der sich auf moderne Sanitär- und Heizungslösungen spezialisiert hat. Unser Team steht für Qualität, Zuverlässigkeit und saubere Arbeit.",
-    imageUrl: "/images/about-default.png",
+    imageUrl: "/images/sections/about/image.png",
     imagePrompt: "Team of professional plumbers or hvac technicians, friendly, german style, Rauch Sanitär-Heizungsbau"
   },
 
   servicesList: [
-    { id: '1', name: "Rohrbruch & Notdienst", description: "Schnelle Hilfe bei Wasserschäden rund um die Uhr.", imageUrl: "/images/service-1.png", imagePrompt: "Professional photo for HVAC service: Rohrbruch & Notdienst. High quality, modern, clean." },
-    { id: '2', name: "Heizungswartung", description: "Regelmäßige Wartung für effiziente Wärme.", imageUrl: "/images/service-2.png", imagePrompt: "Professional photo for HVAC service: Heizungswartung. High quality, modern, clean." },
-    { id: '3', name: "Badsanierung", description: "Ihr Traumbad aus einer Hand geplant und realisiert.", imageUrl: "/images/service-3.png", imagePrompt: "Professional photo for HVAC service: Badsanierung. High quality, modern, clean." }
+    { id: '1', name: "Rohrbruch & Notdienst", description: "Schnelle Hilfe bei Wasserschäden rund um die Uhr.", imageUrl: "/images/sections/service-1/image.png", imagePrompt: "Professional photo for HVAC service: Rohrbruch & Notdienst. High quality, modern, clean." },
+    { id: '2', name: "Heizungswartung", description: "Regelmäßige Wartung für effiziente Wärme.", imageUrl: "/images/sections/service-2/image.png", imagePrompt: "Professional photo for HVAC service: Heizungswartung. High quality, modern, clean." },
+    { id: '3', name: "Badsanierung", description: "Ihr Traumbad aus einer Hand geplant und realisiert.", imageUrl: "/images/sections/service-3/image.png", imagePrompt: "Professional photo for HVAC service: Badsanierung. High quality, modern, clean." }
   ],
 
   reviews: [
